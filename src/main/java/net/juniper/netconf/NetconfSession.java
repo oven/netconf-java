@@ -12,8 +12,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.JSchException;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
@@ -54,8 +54,8 @@ import java.util.concurrent.TimeUnit;
  * the {@link #close() close()} method.</li>
  * </ol>
  */
-@Slf4j
 public class NetconfSession {
+    private static final Logger log = LoggerFactory.getLogger(NetconfSession.class);
 
     private final Channel netconfChannel;
     private String serverCapability;
@@ -365,7 +365,7 @@ public class NetconfSession {
      * @throws IllegalArgumentException if null is passed in as the rpcContent.
      */
     @VisibleForTesting
-    static String fixupRpc(@NonNull String rpcContent) throws IllegalArgumentException {
+    static String fixupRpc(String rpcContent) {
         if (rpcContent == null) {
             throw new IllegalArgumentException("Null RPC");
         }

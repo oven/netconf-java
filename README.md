@@ -16,8 +16,6 @@ REQUIREMENTS
 
 [Maven](https://maven.apache.org/download.cgi) if you want to build using `mvn` [Supported from v2.1.1].
 
-[lombok](https://mvnrepository.com/artifact/org.projectlombok/lombok) needs to be provided by the runtime (`mvn dependency scope` is set as `provided`)
-
 Releases
 ========
 Releases contain source code only. Due to changing JDK licensing, jar files are not released.

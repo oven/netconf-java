@@ -1,12 +1,13 @@
 package net.juniper.netconf;
 
 import com.jcraft.jsch.Channel;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -25,9 +26,9 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
-@Slf4j
 @Category(Test.class)
 public class NetconfSessionTest {
+    private static final Logger log = LoggerFactory.getLogger(NetconfSessionTest.class);
 
     public static final int CONNECTION_TIMEOUT = 2000;
     public static final int COMMAND_TIMEOUT = 5000;

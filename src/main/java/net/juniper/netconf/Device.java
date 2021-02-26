@@ -12,11 +12,8 @@ import com.jcraft.jsch.ChannelSubsystem;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -30,6 +27,8 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * A <code>Device</code> is used to define a Netconf server.
@@ -54,13 +53,11 @@ import java.util.List;
  * {@link #close() close()} method.</li>
  * </ol>
  */
-@Slf4j
-@Getter
-@ToString
 public class Device implements AutoCloseable {
 
     private static final int DEFAULT_NETCONF_PORT = 830;
     private static final int DEFAULT_TIMEOUT = 5000;
+    private static final Logger log = org.slf4j.LoggerFactory.getLogger(Device.class);
 
     private final JSch sshClient;
     private final String hostName;
@@ -85,14 +82,13 @@ public class Device implements AutoCloseable {
     private Session sshSession;
     private NetconfSession netconfSession;
 
-    @Builder
     public Device(JSch sshClient,
-                  @NonNull String hostName,
+                  String hostName,
                   Integer port,
                   Integer timeout,
                   Integer connectionTimeout,
                   Integer commandTimeout,
-                  @NonNull String userName,
+                  String userName,
                   String password,
                   Boolean keyBasedAuthentication,
                   String pemKeyFile,
@@ -100,6 +96,9 @@ public class Device implements AutoCloseable {
                   String hostKeysFileName,
                   List<String> netconfCapabilities
     ) throws NetconfException {
+        requireNonNull(hostName, "hostName is null");
+        requireNonNull(userName, "userName is null");
+
         this.hostName = hostName;
         this.port = (port != null) ? port : DEFAULT_NETCONF_PORT;
         Integer commonTimeout = (timeout != null) ? timeout : DEFAULT_TIMEOUT;
@@ -138,6 +137,10 @@ public class Device implements AutoCloseable {
         helloRpc = createHelloRPC(this.netconfCapabilities);
 
         this.sshClient = (sshClient != null) ? sshClient : new JSch();
+    }
+
+    public static DeviceBuilder builder() {
+        return new DeviceBuilder();
     }
 
     /**
@@ -995,4 +998,171 @@ public class Device implements AutoCloseable {
             netconfSession.removeAllRPCAttributes();
     }
 
+    public JSch getSshClient() {
+        return this.sshClient;
+    }
+
+    public String getHostName() {
+        return this.hostName;
+    }
+
+    public int getPort() {
+        return this.port;
+    }
+
+    public int getConnectionTimeout() {
+        return this.connectionTimeout;
+    }
+
+    public int getCommandTimeout() {
+        return this.commandTimeout;
+    }
+
+    public String getUserName() {
+        return this.userName;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public boolean isKeyBasedAuthentication() {
+        return this.keyBasedAuthentication;
+    }
+
+    public String getPemKeyFile() {
+        return this.pemKeyFile;
+    }
+
+    public boolean isStrictHostKeyChecking() {
+        return this.strictHostKeyChecking;
+    }
+
+    public String getHostKeysFileName() {
+        return this.hostKeysFileName;
+    }
+
+    public DocumentBuilder getBuilder() {
+        return this.builder;
+    }
+
+    public List<String> getNetconfCapabilities() {
+        return this.netconfCapabilities;
+    }
+
+    public String getHelloRpc() {
+        return this.helloRpc;
+    }
+
+    public ChannelSubsystem getSshChannel() {
+        return this.sshChannel;
+    }
+
+    public Session getSshSession() {
+        return this.sshSession;
+    }
+
+    public NetconfSession getNetconfSession() {
+        return this.netconfSession;
+    }
+
+    public String toString() {
+        return "Device(sshClient=" + this.getSshClient() + ", hostName=" + this.getHostName() + ", port=" + this.getPort() + ", connectionTimeout=" + this.getConnectionTimeout() + ", commandTimeout=" + this.getCommandTimeout() + ", userName=" + this.getUserName() + ", password=" + this.getPassword() + ", keyBasedAuthentication=" + this.isKeyBasedAuthentication() + ", pemKeyFile=" + this.getPemKeyFile() + ", strictHostKeyChecking=" + this.isStrictHostKeyChecking() + ", hostKeysFileName=" + this.getHostKeysFileName() + ", builder=" + this.getBuilder() + ", netconfCapabilities=" + this.getNetconfCapabilities() + ", helloRpc=" + this.getHelloRpc() + ", sshChannel=" + this.getSshChannel() + ", sshSession=" + this.getSshSession() + ", netconfSession=" + this.getNetconfSession() + ")";
+    }
+
+    public static class DeviceBuilder {
+        private JSch sshClient;
+        private String hostName;
+        private Integer port;
+        private Integer timeout;
+        private Integer connectionTimeout;
+        private Integer commandTimeout;
+        private String userName;
+        private String password;
+        private Boolean keyBasedAuthentication;
+        private String pemKeyFile;
+        private Boolean strictHostKeyChecking;
+        private String hostKeysFileName;
+        private List<String> netconfCapabilities;
+
+        DeviceBuilder() {
+        }
+
+        public DeviceBuilder sshClient(JSch sshClient) {
+            this.sshClient = sshClient;
+            return this;
+        }
+
+        public DeviceBuilder hostName(String hostName) {
+            requireNonNull(hostName, "hostName is null");
+
+            this.hostName = hostName;
+            return this;
+        }
+
+        public DeviceBuilder port(Integer port) {
+            this.port = port;
+            return this;
+        }
+
+        public DeviceBuilder timeout(Integer timeout) {
+            this.timeout = timeout;
+            return this;
+        }
+
+        public DeviceBuilder connectionTimeout(Integer connectionTimeout) {
+            this.connectionTimeout = connectionTimeout;
+            return this;
+        }
+
+        public DeviceBuilder commandTimeout(Integer commandTimeout) {
+            this.commandTimeout = commandTimeout;
+            return this;
+        }
+
+        public DeviceBuilder userName(String userName) {
+            requireNonNull(userName, "userName is null");
+
+            this.userName = userName;
+            return this;
+        }
+
+        public DeviceBuilder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public DeviceBuilder keyBasedAuthentication(Boolean keyBasedAuthentication) {
+            this.keyBasedAuthentication = keyBasedAuthentication;
+            return this;
+        }
+
+        public DeviceBuilder pemKeyFile(String pemKeyFile) {
+            this.pemKeyFile = pemKeyFile;
+            return this;
+        }
+
+        public DeviceBuilder strictHostKeyChecking(Boolean strictHostKeyChecking) {
+            this.strictHostKeyChecking = strictHostKeyChecking;
+            return this;
+        }
+
+        public DeviceBuilder hostKeysFileName(String hostKeysFileName) {
+            this.hostKeysFileName = hostKeysFileName;
+            return this;
+        }
+
+        public DeviceBuilder netconfCapabilities(List<String> netconfCapabilities) {
+            this.netconfCapabilities = netconfCapabilities;
+            return this;
+        }
+
+        public Device build() throws NetconfException {
+            return new Device(sshClient, hostName, port, timeout, connectionTimeout, commandTimeout, userName, password, keyBasedAuthentication, pemKeyFile, strictHostKeyChecking, hostKeysFileName, netconfCapabilities);
+        }
+
+        public String toString() {
+            return "Device.DeviceBuilder(sshClient=" + this.sshClient + ", hostName=" + this.hostName + ", port=" + this.port + ", timeout=" + this.timeout + ", connectionTimeout=" + this.connectionTimeout + ", commandTimeout=" + this.commandTimeout + ", userName=" + this.userName + ", password=" + this.password + ", keyBasedAuthentication=" + this.keyBasedAuthentication + ", pemKeyFile=" + this.pemKeyFile + ", strictHostKeyChecking=" + this.strictHostKeyChecking + ", hostKeysFileName=" + this.hostKeysFileName + ", netconfCapabilities=" + this.netconfCapabilities + ")";
+        }
+    }
 }
